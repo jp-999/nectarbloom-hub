@@ -28,8 +28,6 @@
   var p = document.getElementById('prev'), n = document.getElementById('next');
   if (p) p.addEventListener('click', prev);
   if (n) n.addEventListener('click', next);
-  var pdf = document.getElementById('exportPdf');
-  if (pdf) pdf.addEventListener('click', function () { window.print(); });
 
   window.addEventListener('hashchange', function () {
     var h = parseInt((location.hash || '').replace('#', ''), 10);
