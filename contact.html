@@ -121,23 +121,6 @@
   .chan-link { margin-top: 15px; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--brand); align-self: flex-start; }
   .chan-link:hover { text-decoration: underline; }
 
-  /* ---- QM cards ---- */
-  .qm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  .qm-card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); display: flex; gap: 14px; align-items: flex-start; transition: transform .18s, box-shadow .18s, border-color .18s; }
-  .qm-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); border-color: var(--brand-2); }
-  .qm-av { flex: none; width: 48px; height: 48px; border-radius: 13px; display: grid; place-items: center; font-weight: 800; font-size: 16px; color: #fff; background: linear-gradient(135deg, #7c3aed, #a855f7); }
-  .qm-av.v2 { background: linear-gradient(135deg, #0d9488, #2dd4bf); }
-  .qm-av.v3 { background: linear-gradient(135deg, #b7791f, #e0a90b); }
-  .qm-av.v4 { background: linear-gradient(135deg, #be123c, #f43f5e); }
-  .qm-main { min-width: 0; flex: 1; }
-  .qm-name { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
-  .qm-role { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--brand); background: var(--brand-ring); padding: 2px 8px; border-radius: 999px; }
-  .qm-hours { margin: 7px 0 0; color: var(--muted); font-size: 12.8px; }
-  .qm-oc { margin: 9px 0 0; font-size: 12.8px; color: var(--notes-ink); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .qm-handle { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--notes-strong); background: var(--inside-bg); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; }
-  .qm-send { font-size: 12.5px; font-weight: 700; color: var(--brand); }
-  .qm-send:hover { text-decoration: underline; }
-
   /* ---- Callout ---- */
   .callout { margin-top: 24px; display: flex; gap: 12px; align-items: flex-start; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: 12px; padding: 16px 18px; color: var(--notes-ink); font-size: 13.8px; box-shadow: var(--shadow); }
   .callout b { color: var(--notes-strong); }
@@ -158,7 +141,6 @@
 
   @media (max-width: 900px) {
     .chan-grid { grid-template-columns: 1fr; }
-    .qm-grid { grid-template-columns: 1fr; }
     .nav-tabs { display: none; }
   }
   @media (max-width: 560px) {
@@ -200,7 +182,6 @@
       <p class="hero-sub">Stuck? You are not alone. Here is who to ask, and where. For anything about a specific task, include the task ID.</p>
       <nav class="pills" aria-label="On this page">
         <a class="pill" href="#channels">Who to contact</a>
-        <a class="pill" href="#qms">Your QMs</a>
         <a class="pill" href="#before">Before you ask</a>
       </nav>
     </div>
@@ -236,48 +217,6 @@
         <h3>Your dashboard</h3>
         <p>Your tasks, your queue and the War Room link. Check it before you claim a task.</p>
         <a class="chan-link" href="https://app.outlier.ai" target="_blank" rel="noopener">Open dashboard &#8599;</a>
-      </article>
-    </div>
-  </section>
-
-  <!-- ============ QMS ============ -->
-  <section id="qms" class="sec">
-    <div class="section-head">
-      <h2><span>&#128105;&#8205;&#128188;</span> Your QMs</h2>
-      <p class="lead">Reach them in the War Room or on the OC. Their working hours tell you when to expect a reply.</p>
-    </div>
-    <div class="qm-grid">
-      <article class="qm-card">
-        <div class="qm-av v1">HF</div>
-        <div class="qm-main">
-          <div class="qm-name">Huan Francischinelli <span class="qm-role">QM</span></div>
-          <div class="qm-hours">&#128339; 7 AM to 3 PM PST</div>
-          <div class="qm-oc">&#128483; OC: <span class="qm-handle">@Huan_QM</span> <a class="qm-send" href="https://app.outlier.ai" target="_blank" rel="noopener">Send a message &#8599;</a></div>
-        </div>
-      </article>
-      <article class="qm-card">
-        <div class="qm-av v2">YA</div>
-        <div class="qm-main">
-          <div class="qm-name">Yash Attri <span class="qm-role">QM</span></div>
-          <div class="qm-hours">&#128339; 2:30 AM to 10:30 AM PST (3 PM to 11 PM IST)</div>
-          <div class="qm-oc">&#128483; OC: <span class="qm-handle">@yash.attri</span> <a class="qm-send" href="https://app.outlier.ai" target="_blank" rel="noopener">Send a message &#8599;</a></div>
-        </div>
-      </article>
-      <article class="qm-card">
-        <div class="qm-av v3">JP</div>
-        <div class="qm-main">
-          <div class="qm-name">Jayanth Peddi <span class="qm-role">QM</span></div>
-          <div class="qm-hours">&#128339; 12 PM to 8 PM IST</div>
-          <div class="qm-oc">&#128483; OC: <span class="qm-handle">@Jayanth_Peddi_QM</span> <a class="qm-send" href="https://app.outlier.ai" target="_blank" rel="noopener">Send a message &#8599;</a></div>
-        </div>
-      </article>
-      <article class="qm-card">
-        <div class="qm-av v4">DS</div>
-        <div class="qm-main">
-          <div class="qm-name">Davide Sell <span class="qm-role">QM</span></div>
-          <div class="qm-hours">&#128339; Mon to Fri 10 AM to 7 PM KST (6 PM to 3 AM PST), some weekend hours</div>
-          <div class="qm-oc">&#128483; OC: <span class="qm-handle">@Davide_QMO_IT</span> <a class="qm-send" href="https://app.outlier.ai" target="_blank" rel="noopener">Send a message &#8599;</a></div>
-        </div>
       </article>
     </div>
   </section>
