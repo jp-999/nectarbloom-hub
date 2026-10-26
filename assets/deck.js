@@ -1,4 +1,4 @@
-/* Nectarbloom deck viewer — shared logic */
+/* Nectarbloom deck viewer - shared logic */
 (function () {
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   if (!slides.length) return;
