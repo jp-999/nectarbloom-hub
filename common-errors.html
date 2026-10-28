@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Common Errors - Nectarbloom (Ultra Evals)</title>
 <link rel="stylesheet" href="assets/deck.css">
@@ -98,6 +99,7 @@
             <tr><td class="c-err">Written or polished by an LLM</td><td class="c-why">Paste is disabled and you attest the text is your own.</td><td class="c-fix">Write it yourself, in your own words.</td></tr>
             <tr><td class="c-err">Wrong language or register</td><td class="c-why">A fully English opener on a fr/de item (loanwords are fine), or an English scenario translated into the locale, reads unnatural and restarts the item.</td><td class="c-fix">Write natively in the assigned locale from the start. Never "fix it in translation."</td></tr>
             <tr><td class="c-err">All deliverables in the opener</td><td class="c-why">Naming the file, numbers or email gives the answer away and the model one-shots it.</td><td class="c-fix">Describe the situation and the worry, not the output. Put the PDF, sheet and draft in Target Deliverables.</td></tr>
+            <tr><td class="c-err">Contrived or stacked constraints</td><td class="c-why">The opener piles on rigid, unrealistic rules (exactly three tables, 15-minute blocks, legally-binding wording) that no real user would stack.</td><td class="c-fix">Use only constraints a real user would set, and keep the opener a loose, situation-first ask.</td></tr>
           </tbody>
         </table>
       </div>
@@ -122,6 +124,7 @@
             <tr><td class="c-err">No values or absences</td><td class="c-why"><em class="q">"Prepare a reconciliation file"</em> gives the rubric nothing to grade.</td><td class="c-fix">Name the artifact, its exact values, side effects (drafts, events) and what must be absent (out-of-scope data, PII, a sent email).</td></tr>
             <tr><td class="c-err">Requires sending or sharing</td><td class="c-why">The model may draft but must never send an email or share a file.</td><td class="c-fix">Say <em class="q">"drafts an email that stays unsent."</em></td></tr>
             <tr><td class="c-err">Too thin for 20+ turns</td><td class="c-why">If your honest turn estimate is under 20, the scenario is too thin.</td><td class="c-fix">Add real work: a new artifact, a cross-source check, or a mid-task correction. Re-confirming or splitting one ask does not count.</td></tr>
+            <tr><td class="c-err">No unique ground truth</td><td class="c-why">The item has more than one valid answer, or the result is subjective or undetermined; or the target outcome is a question that names nothing to produce.</td><td class="c-fix">Pose one concrete task that lands on a single correct final state, derivable from the sources, with at least one produced output.</td></tr>
           </tbody>
         </table>
       </div>
@@ -160,7 +163,7 @@
       <div class="s-head">
         <div class="s-eyebrow">Section 4 &middot; Rubric criteria &middot; Writing each line</div>
         <h2 class="s-title">Binary, observable, present-tense, self-contained</h2>
-        <p class="s-intro">Every criterion is binary, observable, atomic, positive, product-independent and self-contained, in the simple present tense (States, Includes, Reports...). Weights are only +1, +2, +3.</p>
+        <p class="s-intro">Every criterion is binary, observable, atomic, positive, product-independent, self-contained and written in English, in the simple present tense (States, Includes, Reports...). Weights are only +1, +2, +3.</p>
       </div>
       <div class="s-body">
         <table class="dtable">
@@ -172,6 +175,7 @@
             <tr><td class="c-err">Judges the process</td><td class="c-why"><em class="q">"Reasons carefully about the recipients."</em></td><td class="c-fix"><em class="q">"Addresses the email draft to the named recipient."</em></td></tr>
             <tr><td class="c-err">Negatively framed</td><td class="c-why"><em class="q">"No message in Sent..."</em> (a run that does nothing passes).</td><td class="c-fix"><em class="q">"Leaves an unsent draft addressed to the named recipient."</em></td></tr>
             <tr><td class="c-err">Accepts instructions, not a file</td><td class="c-why"><em class="q">"Explains how to structure the reconciliation spreadsheet."</em></td><td class="c-fix"><em class="q">"Provides a spreadsheet file with one row per exhibit."</em></td></tr>
+            <tr><td class="c-err">Rubric not in English</td><td class="c-why">Criteria and justifications written in Japanese, Korean or German.</td><td class="c-fix">Written in English; keep local names, dates and currency as they appear.</td></tr>
           </tbody>
         </table>
       </div>
@@ -252,8 +256,8 @@
           <thead><tr><th class="c-err">Error</th><th class="c-why">What it looks like</th><th class="c-fix">Fix</th></tr></thead>
           <tbody>
             <tr><td class="c-err">Broken run</td><td class="c-why">The model cannot reach the account or uses another persona's; it invents data ("Alpha/Beta", "[domaine]" placeholders) or tells the user to do the work.</td><td class="c-fix">Re-run on a reset, correct account. Every entity must come from the universe.</td></tr>
-            <tr><td class="c-err">Filed record does not match the run</td><td class="c-why">Filed turns differ from the chat PDF, a turn appears that was never sent, or outputs are left over from an older run.</td><td class="c-fix">File exactly what happened: the turns, the PDF and every output from the same run.</td></tr>
-            <tr><td class="c-err">Passes the gate only on paper</td><td class="c-why">Filed under 40%, but 45-96% when regraded honestly on the evidence.</td><td class="c-fix">Harden the item and regrade on what was really produced. Do not let mis-grading carry the gate.</td></tr>
+            <tr><td class="c-err">Evidence not from this run</td><td class="c-why">A chat PDF, screenshots or GTFA taken from another chat; a "turn" record that is the model's own reply; or input files that are actually the model's output.</td><td class="c-fix">Everything comes from this one run: turns are the prompts you sent, inputs are genuine source files, and the PDF, screenshots and GTFA match this chat.</td></tr>
+            <tr><td class="c-err">Passes the gate only on paper</td><td class="c-why">Filed under 40%, but 41-93% when regraded honestly, often by marking visible draft or calendar cards as Fail because they look like placeholders in the PDF.</td><td class="c-fix">Grade cards from the share page, where they are visible. Harden the item; never grade down, because above 40% is sent back.</td></tr>
             <tr><td class="c-err">Integrity violations</td><td class="c-why">A figure fabricated so a total matches; a self-check marked "full" while the automated check lists gaps; grades flipped to hold the gate; Turn 1 edited without a re-run.</td><td class="c-fix">Never alter evidence or grades. Fix the work, not the number.</td></tr>
           </tbody>
         </table>
