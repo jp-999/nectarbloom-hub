@@ -5,7 +5,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Failure Playbook - Nectarbloom (Ultra Evals)</title>
-<meta name="description" content="Where Gemini 3.8 Flash really breaks: ranked stumping techniques from graded simplified runs, what does not stump it, QC traps, and failure modes by locale.">
+<meta name="description" content="Where Gemini 3.8 Flash really breaks: ranked stumping techniques with real worked cases, a start-from-your-task selector, what does not stump it, QC traps, and failure modes by locale.">
 <style>
   :root {
     --bg: #f5f4fb; --panel: #ffffff; --ink: #1c1833; --muted: #645b77; --line: #e7e4f0;
@@ -79,21 +79,43 @@
   .section-head h2 { margin: 0; font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; letter-spacing: -.02em; }
   .section-head .lead { margin: 10px 0 0; color: var(--muted); font-size: 15px; max-width: 84ch; }
 
-  /* stats */
   .stat-panel { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
   .stat-tile { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 16px 15px; box-shadow: var(--shadow); }
   .stat-tile .n { font-size: 26px; font-weight: 800; letter-spacing: -.02em; color: var(--brand); }
   .stat-tile .l { margin-top: 4px; font-size: 12px; color: var(--muted); }
   .panel-note { margin-top: 14px; color: var(--muted); font-size: 12.8px; max-width: 90ch; }
 
-  /* type chips */
-  .type-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-  .type-chip { font-size: 12.5px; font-weight: 700; color: var(--notes-ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; transition: border-color .16s, color .16s; }
-  .type-chip:hover { border-color: var(--brand); color: var(--brand); }
+  /* ---- Start from your task (selector) ---- */
+  .selector { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 20px 22px; }
+  .feature-groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .fg h4 { margin: 0 0 10px; font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--rose, var(--muted)); color: var(--muted); }
+  .feat-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .feat-chip { cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--notes-ink); background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; transition: all .14s; }
+  .feat-chip:hover { border-color: var(--brand-2); }
+  .feat-chip.on { background: var(--brand); color: #fff; border-color: var(--brand); box-shadow: 0 4px 12px var(--brand-glow); }
+  .feat-chip .lown { opacity: .7; font-weight: 700; }
+  .sel-foot { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .sel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .sel-head h4 { margin: 0; font-size: 13px; font-weight: 800; }
+  .sel-mode { font-size: 12px; color: var(--muted); }
+  .sel-reset { cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; color: var(--brand); background: none; border: 0; padding: 0; }
+  .rank-row { display: grid; grid-template-columns: 170px 1fr 64px; align-items: center; gap: 12px; padding: 4px 0; }
+  .rank-name { font-size: 12.8px; font-weight: 700; color: var(--notes-strong); }
+  .rank-name .k { color: var(--muted); font-weight: 700; }
+  .rank-bar { height: 9px; background: var(--inside-bg); border-radius: 999px; overflow: hidden; }
+  .rank-bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-2)); border-radius: 999px; transition: width .35s ease; }
+  .rank-pct { font-size: 12.5px; font-weight: 800; color: var(--brand); text-align: right; font-variant-numeric: tabular-nums; }
+  .rank-row.dim .rank-name { color: var(--muted); } .rank-row.dim .rank-bar span { background: var(--line); }
 
-  /* play entries */
+  /* ---- Technique filter + cards ---- */
+  .type-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .tf-chip { cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--notes-ink); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; transition: all .14s; }
+  .tf-chip:hover { border-color: var(--brand); color: var(--brand); }
+  .tf-chip.active { background: var(--brand); color: #fff; border-color: var(--brand); box-shadow: 0 4px 12px var(--brand-glow); }
+
   .play-list { display: flex; flex-direction: column; gap: 16px; }
   .play { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--fail-line); border-radius: 16px; padding: 18px 20px; box-shadow: var(--shadow); }
+  .play.hide { display: none; }
   .play-head { display: flex; gap: 14px; align-items: flex-start; }
   .play-rank { flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--brand); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: 15px; }
   .play-head h3 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
@@ -101,14 +123,28 @@
   .tag { font-size: 11px; font-weight: 700; color: var(--muted); background: var(--inside-bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; }
   .tag.rose { color: var(--fail-ink); background: var(--fail-bg); border-color: var(--fail-line); }
   .tag.gold { color: var(--warn-ink); background: var(--warn-bg); border-color: var(--warn-line); }
+  .tag.pass { color: var(--pass-ink); background: var(--pass-bg); border-color: var(--pass-line); }
   .play-grid { margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   .mini-label { font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
   .play-grid p { margin: 0; font-size: 13px; color: var(--notes-ink); }
-  .play-grid .ex { margin-top: 9px; font-size: 12px; color: var(--muted); }
-  .play-grid .ex b { color: var(--notes-strong); font-weight: 700; }
-  .play-grid .q { font-style: normal; color: var(--notes-strong); }
 
-  /* tables */
+  .cases { margin-top: 15px; padding-top: 13px; border-top: 1px dashed var(--line); }
+  .cases-label { font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 9px; }
+  details.case { border: 1px solid var(--line); border-radius: 11px; margin: 8px 0; background: var(--bg); overflow: hidden; }
+  details.case[open] { border-color: var(--brand-2); }
+  details.case > summary { cursor: pointer; list-style: none; padding: 10px 13px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  details.case > summary::-webkit-details-marker { display: none; }
+  .case-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; font-weight: 700; color: var(--muted); background: var(--inside-bg); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; }
+  .case-crit { font-size: 12.5px; font-weight: 600; color: var(--notes-strong); flex: 1 1 auto; min-width: 180px; }
+  .case-chevron { margin-left: auto; color: var(--muted); transition: transform .18s; }
+  details.case[open] .case-chevron { transform: rotate(90deg); }
+  .case-body { padding: 2px 13px 13px; }
+  .case-body .cl { font-size: 9.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 10px 0 3px; }
+  .case-body p { margin: 0; font-size: 12.7px; color: var(--notes-ink); }
+  .case-body p.orig { margin-top: 4px; color: var(--muted); font-size: 12px; }
+  .case-shape { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
+  .case-shape .s { font-size: 10px; font-weight: 700; color: var(--muted); background: var(--inside-bg); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; }
+
   .ptable { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
   .ptable th { text-align: left; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--inside-bg); padding: 11px 16px; border-bottom: 1px solid var(--line); }
   .ptable td { padding: 11px 16px; border-bottom: 1px solid var(--line); font-size: 13.3px; color: var(--notes-ink); vertical-align: top; }
@@ -117,16 +153,13 @@
   .ptable td.k { font-weight: 700; color: var(--notes-strong); }
   .ptable tbody tr:hover { background: var(--hover); }
 
-  /* traps */
   .trap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .trap { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--warn-line); border-radius: 12px; padding: 14px 16px; }
   .trap h4 { margin: 0 0 5px; font-size: 14px; font-weight: 800; }
   .trap p { margin: 0; font-size: 12.8px; color: var(--notes-ink); }
 
-  /* callout */
   .callout { margin-top: 22px; display: flex; gap: 12px; align-items: flex-start; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: 12px; padding: 16px 18px; color: var(--notes-ink); font-size: 13.8px; box-shadow: var(--shadow); }
   .callout b { color: var(--notes-strong); }
-  .callout a { color: var(--brand); font-weight: 700; }
   .callout-ic { font-size: 18px; line-height: 1.3; flex: none; }
   .callout.good { border-left-color: var(--pass-line); background: var(--pass-bg); color: var(--pass-ink); }
   .callout.good b { color: var(--pass-ink); }
@@ -144,8 +177,10 @@
 
   @media (max-width: 900px) {
     .stat-panel { grid-template-columns: 1fr 1fr; }
+    .feature-groups { grid-template-columns: 1fr; }
     .play-grid { grid-template-columns: 1fr; }
     .trap-grid { grid-template-columns: 1fr; }
+    .rank-row { grid-template-columns: 130px 1fr 52px; }
     .nav-tabs { display: none; }
   }
   @media (max-width: 560px) {
@@ -186,17 +221,17 @@
     <div class="hero-main">
       <div class="hero-eyebrow">Failure Playbook</div>
       <h1 class="hero-title">Where Gemini 3.8 Flash really breaks</h1>
-      <p class="hero-sub">Real failures from graded simplified runs on Gemini 3.8 Flash (Low, Workspace): what the model was asked, what it did instead, and why it failed. Each technique ends with how to build the same pressure into your own item, and the rule that keeps the failure real.</p>
+      <p class="hero-sub">Real failures from graded simplified runs on Gemini 3.8 Flash (Low, Workspace). Open a technique to see verbatim cases: what the model was asked, what it did instead, and why it failed. Or start from what your task has and let the data rank the likely failure modes.</p>
       <nav class="pills" aria-label="On this page">
         <a class="pill" href="#data">The data</a>
-        <a class="pill" href="#techniques">Stumping techniques</a>
+        <a class="pill" href="#your-task">Start from your task</a>
+        <a class="pill" href="#techniques">Techniques</a>
         <a class="pill" href="#passes">What does not stump it</a>
         <a class="pill" href="#traps">QC traps</a>
-        <a class="pill" href="#locales">By locale</a>
       </nav>
     </div>
     <div class="hero-side">
-      <div class="updated"><span class="live-dot"></span>Updated Oct 27, 2026</div>
+      <div class="updated"><span class="live-dot"></span>Updated Oct 29, 2026</div>
     </div>
   </div>
 </header>
@@ -210,23 +245,35 @@
       <p class="lead">Graded simplified runs across the Nectarbloom i18n Prompt and Rubrics queue. The gate is Pass weight divided by total weight on the first simplified run.</p>
     </div>
     <div class="stat-panel">
-      <div class="stat-tile"><div class="n">69</div><div class="l">valid runs used (of 86 per-task runs)</div></div>
-      <div class="stat-tile"><div class="n">~936</div><div class="l">Fail ratings analysed</div></div>
-      <div class="stat-tile"><div class="n">17</div><div class="l">excluded: no access, void or integrity</div></div>
+      <div class="stat-tile"><div class="n">81</div><div class="l">valid tasks in the mapping</div></div>
+      <div class="stat-tile"><div class="n">53</div><div class="l">worked cases, shown end to end</div></div>
+      <div class="stat-tile"><div class="n">9</div><div class="l">ranked techniques (T1 to T9)</div></div>
       <div class="stat-tile"><div class="n">5</div><div class="l">locales: fr, de, en, ko, ja</div></div>
       <div class="stat-tile"><div class="n">0 / 54</div><div class="l">lowest gate (the best stump)</div></div>
     </div>
-    <p class="panel-note">About 80% of all Fails come from the model <b>not producing the Workspace deliverable</b>. Content errors are about 15%, but they are the cleanest stumps. Counts are Fails, not tasks, so atomic criteria inflate the artifact-missing categories; every count is about plus or minus 10%.</p>
-    <div class="type-chips">
-      <a class="type-chip" href="#techniques">One-action stop</a>
-      <a class="type-chip" href="#techniques">Unwritable file</a>
-      <a class="type-chip" href="#techniques">Epistemic status</a>
-      <a class="type-chip" href="#techniques">Complete enumeration</a>
-      <a class="type-chip" href="#techniques">Arithmetic chains</a>
-      <a class="type-chip" href="#techniques">Buried detail</a>
-      <a class="type-chip" href="#techniques">Social constraint</a>
-      <a class="type-chip" href="#techniques">Null answer</a>
-      <a class="type-chip" href="#techniques">Smaller levers</a>
+    <p class="panel-note">About 80% of all Fails come from the model <b>not producing the Workspace deliverable</b>. Content errors are about 15%, but they are the cleanest stumps. Weights and ratings are QC's corrected versions, regraded on the share-page evidence; treat every rate as direction, not precision.</p>
+  </section>
+
+  <!-- ============ START FROM YOUR TASK ============ -->
+  <section id="your-task" class="sec">
+    <div class="section-head">
+      <h2>Start from what your task has</h2>
+      <p class="lead">Pick the inputs, connectors and ask types your item gives the model. The data ranks the techniques most likely to stump it on a task shaped like yours.</p>
+    </div>
+    <div class="selector">
+      <div class="feature-groups">
+        <div class="fg"><h4>Inputs</h4><div class="feat-chips" id="fgInputs"></div></div>
+        <div class="fg"><h4>Connectors</h4><div class="feat-chips" id="fgConnectors"></div></div>
+        <div class="fg"><h4>Ask types</h4><div class="feat-chips" id="fgAsks"></div></div>
+      </div>
+      <div class="sel-foot">
+        <div class="sel-head">
+          <h4>Most likely failure modes</h4>
+          <span class="sel-mode" id="selMode"></span>
+          <button class="sel-reset" id="selReset" type="button">Reset</button>
+        </div>
+        <div id="selResult"></div>
+      </div>
     </div>
   </section>
 
@@ -234,107 +281,117 @@
   <section id="techniques" class="sec">
     <div class="section-head">
       <h2>Nine ways it fails, in rank order</h2>
-      <p class="lead">Each technique shows its scale in the graded runs, what the model actually does, and how to build the same pressure into your item.</p>
+      <p class="lead">Filter by technique, then open a case to read the verbatim ask, what the model produced, and why it failed. Cases glossed to English; the original quote is kept where it differs.</p>
     </div>
-    <div class="play-list">
+    <div class="type-filter" id="typeFilter"></div>
+    <div class="play-list" id="playList">
 
-      <article class="play">
+      <article class="play" data-t="T1">
         <div class="play-head"><span class="play-rank">1</span><div>
           <h3>One-action stop (multi-deliverable dump with an email draft)</h3>
           <div class="play-tags"><span class="tag rose">~305 Fails</span><span class="tag">29 tasks</span><span class="tag">mean weight 2.2</span><span class="tag gold">Biggest single cause</span></div>
         </div></div>
         <div class="play-grid">
-          <div><div class="mini-label">What happens</div><p>The model makes one Gmail or Calendar card, replies only <span class="q">"I drafted this for you."</span>, and drops every other ask: the analysis, the Doc, the Sheet, the other drafts.</p><div class="ex"><b>Example:</b> turn 3 says <span class="q">"You've only done the reply to Ben"</span>, and the model again makes just one draft.</div></div>
-          <div><div class="mini-label">Build it into your item</div><p>One dump that asks for computed answers <b>plus</b> two or more drafts to different people <b>plus</b> a Doc or Sheet. Strongest in ja, where it is worth roughly 305 weight points against 70 to 120 elsewhere.</p></div>
+          <div><div class="mini-label">What happens</div><p>The model makes one Gmail or Calendar card, replies only "I drafted this for you.", and drops every other ask: the analysis, the Doc, the Sheet, the other drafts.</p></div>
+          <div><div class="mini-label">Build it into your item</div><p>One dump that asks for computed answers <b>plus</b> two or more drafts to different people <b>plus</b> a Doc or Sheet. Strongest in ja.</p></div>
         </div>
+        <div class="cases" data-cases="T1"><div class="cases-label">Real cases</div></div>
       </article>
 
-      <article class="play">
+      <article class="play" data-t="T2">
         <div class="play-head"><span class="play-rank">2</span><div>
           <h3>Unwritable file (edit or create a file the connector cannot write)</h3>
           <div class="play-tags"><span class="tag rose">~255 Fails</span><span class="tag">43 tasks</span><span class="tag gold">Cheapest stump</span></div>
         </div></div>
         <div class="play-grid">
-          <div><div class="mini-label">What happens</div><p>The model prints the file in chat with no save (~255 Fails), or returns an explicit tool-limit message (~126 Fails, 21 tasks). One missing file fails 5 to 15 atomic children.</p><div class="ex"><b>Example:</b> <span class="q">"System-Limit"</span>, or it tells the user to delete the files themselves.</div></div>
-          <div><div class="mini-label">Build it into your item</div><p>Ask it to edit an existing .xlsx, .csv, .md or PDF in place; make a .png, PDF or .xlsx with an exact name in a given folder; delete or move Drive files; create a Gmail label; or add a worksheet to an uploaded .xlsx. QC accepts these as valid failures.</p></div>
+          <div><div class="mini-label">What happens</div><p>The model prints the file in chat with no save, or returns an explicit tool-limit message. One missing file fails 5 to 15 atomic children.</p></div>
+          <div><div class="mini-label">Build it into your item</div><p>Ask it to edit an existing file in place; make a file with an exact name in a folder; delete or move Drive files; create a Gmail label; or add a worksheet to an uploaded sheet.</p></div>
         </div>
+        <div class="cases" data-cases="T2"><div class="cases-label">Real cases</div></div>
       </article>
 
-      <article class="play">
+      <article class="play" data-t="T3">
         <div class="play-head"><span class="play-rank">3</span><div>
           <h3>Implicit epistemic status (open vs settled, verified vs claimed)</h3>
           <div class="play-tags"><span class="tag rose">19 Fails</span><span class="tag">7 tasks</span></div>
         </div></div>
         <div class="play-grid">
-          <div><div class="mini-label">What happens</div><p>The model calls things done or answered when the sources leave them open, or invents an approval.</p><div class="ex"><b>Example:</b> a handover marked <span class="q">"Erledigt und beidseitig unterzeichnet"</span> although the protocol is blank; a draft that claims a supervisor was consulted before any consultation.</div></div>
-          <div><div class="mini-label">Build it into your item</div><p>Two documents that disagree, or a step that has not happened yet, which the user does not flag. Make the reader cross-check two sources to find the real status.</p></div>
+          <div><div class="mini-label">What happens</div><p>The model calls things done or answered when the sources leave them open, or invents an approval.</p></div>
+          <div><div class="mini-label">Build it into your item</div><p>Two documents that disagree, or a step that has not happened yet, which the user does not flag.</p></div>
         </div>
+        <div class="cases" data-cases="T3"><div class="cases-label">Real cases</div></div>
       </article>
 
-      <article class="play">
+      <article class="play" data-t="T4">
         <div class="play-head"><span class="play-rank">4</span><div>
           <h3>Complete enumeration across many emails or files</h3>
           <div class="play-tags"><span class="tag rose">23 Fails</span><span class="tag">5 tasks</span></div>
         </div></div>
         <div class="play-grid">
-          <div><div class="mini-label">What happens</div><p>The model reports a subset: <span class="q">"총 5건"</span> instead of 8 job alerts; a tracker with 4 of 10 people; October dropped from a May to October range; one visit omitted from 14.</p></div>
-          <div><div class="mini-label">Build it into your item</div><p>Scatter about 8 to 15 records over Gmail and Drive, some in a different thread or format, and require all of them to be counted.</p></div>
+          <div><div class="mini-label">What happens</div><p>The model reports a subset: 5 of 8 alerts; 4 of 10 people; one month dropped from a range.</p></div>
+          <div><div class="mini-label">Build it into your item</div><p>Scatter about 8 to 15 records over Gmail and Drive, some in a different thread or format, and require all of them.</p></div>
         </div>
+        <div class="cases" data-cases="T4"><div class="cases-label">Real cases</div></div>
       </article>
 
-      <article class="play">
+      <article class="play" data-t="T5">
         <div class="play-head"><span class="play-rank">5</span><div>
           <h3>Long chains of derived arithmetic</h3>
           <div class="play-tags"><span class="tag rose">17 Fails</span><span class="tag">4 tasks</span><span class="tag gold">Highest mean weight 2.6</span></div>
         </div></div>
         <div class="play-grid">
-          <div><div class="mini-label">What happens</div><p>One wrong input spreads through many metrics. In one run the model used 308 h instead of 318.5 h and GBP 1,771.95 instead of GBP 2,222.07, and the error ran through 14 metrics.</p></div>
-          <div><div class="mini-label">Build it into your item</div><p>A figure that must be read correctly from a source, then reused across many computed outputs so a single misread cascades.</p></div>
+          <div><div class="mini-label">What happens</div><p>One wrong input spreads through many metrics. In one run a 308 h figure instead of 318.5 h ran through 14 metrics.</p></div>
+          <div><div class="mini-label">Build it into your item</div><p>A figure that must be read correctly from a source, then reused across many computed outputs.</p></div>
         </div>
+        <div class="cases" data-cases="T5"><div class="cases-label">Real cases</div></div>
       </article>
 
-      <article class="play">
+      <article class="play" data-t="T6">
         <div class="play-head"><span class="play-rank">6</span><div>
           <h3>Buried detail in a thread or note</h3>
           <div class="play-tags"><span class="tag rose">~46 Fails</span><span class="tag">23 tasks</span><span class="tag">low weight 1.8</span></div>
         </div></div>
         <div class="play-grid">
-          <div><div class="mini-label">What happens</div><p>The summary is right but misses one dated or conditional fact: a <span class="q">"may decline"</span> remark, a specific reply date, or a <span class="q">"3 days late"</span> note.</p></div>
-          <div><div class="mini-label">Build it into your item</div><p>One load-bearing detail buried in a long thread or note, where a fluent summary can look complete without it.</p></div>
+          <div><div class="mini-label">What happens</div><p>The summary is right but misses one dated or conditional fact: a "may decline" remark, a specific date, "3 days late".</p></div>
+          <div><div class="mini-label">Build it into your item</div><p>One load-bearing detail buried in a long thread or note.</p></div>
         </div>
+        <div class="cases" data-cases="T6"><div class="cases-label">Real cases</div></div>
       </article>
 
-      <article class="play">
+      <article class="play" data-t="T7">
         <div class="play-head"><span class="play-rank">7</span><div>
           <h3>Social or implicit constraint taken from another source</h3>
           <div class="play-tags"><span class="tag rose">5 Fails</span><span class="tag">4 tasks</span><span class="tag">weight 2.4</span></div>
         </div></div>
         <div class="play-grid">
-          <div><div class="mini-label">What happens</div><p>The model ignores an unstated norm: it accepts data the dissertation rules out; replies formally to a casual message; or asks all 10 contributors instead of the 7 with clips.</p></div>
-          <div><div class="mini-label">Build it into your item</div><p>Put a norm, scope or register in the files or the tone rather than in the explicit ask, so only a careful reader honours it.</p></div>
+          <div><div class="mini-label">What happens</div><p>The model ignores an unstated norm: it uses data a source rules out; replies formally to a casual message; or asks all 10 contributors instead of the 7 with clips.</p></div>
+          <div><div class="mini-label">Build it into your item</div><p>Put a norm, scope or register in the files or the tone, not in the explicit ask.</p></div>
         </div>
+        <div class="cases" data-cases="T7"><div class="cases-label">Real cases</div></div>
       </article>
 
-      <article class="play">
+      <article class="play" data-t="T8">
         <div class="play-head"><span class="play-rank">8</span><div>
           <h3>Null answer or "already correct"</h3>
           <div class="play-tags"><span class="tag rose">content stump</span></div>
         </div></div>
         <div class="play-grid">
-          <div><div class="mini-label">What happens</div><p>The model "fixes" something already right: it corrected 5 accurate timestamps by minus 1 hour, or invented a May tax invoice for a month that has none.</p></div>
-          <div><div class="mini-label">Build it into your item</div><p>A case where the correct action is to change nothing, or to report that nothing applies. The model tends to produce a change anyway.</p></div>
+          <div><div class="mini-label">What happens</div><p>The model "fixes" something already right: it corrects accurate timestamps by minus 1 hour, or invents an invoice for a month that has none.</p></div>
+          <div><div class="mini-label">Build it into your item</div><p>A case where the correct action is to change nothing, or to report that nothing applies.</p></div>
         </div>
+        <div class="cases" data-cases="T8"><div class="cases-label">Real cases</div></div>
       </article>
 
-      <article class="play">
+      <article class="play" data-t="T9">
         <div class="play-head"><span class="play-rank">9</span><div>
           <h3>Smaller levers</h3>
-          <div class="play-tags"><span class="tag">general knowledge</span><span class="tag">placeholders</span><span class="tag">hedged range</span><span class="tag">time zone</span></div>
+          <div class="play-tags"><span class="tag">general knowledge</span><span class="tag">entity variant</span><span class="tag">hedged range</span><span class="tag">demo time zone</span></div>
         </div></div>
         <div class="play-grid">
-          <div><div class="mini-label">What happens</div><p><b>General knowledge over the user's own document</b> (6 Fails): 30 to 50% instead of the document's 60%. <b>Placeholder or entity variant</b> (~11 Fails): <span class="q">ploverandpine@example.com</span>, or <span class="q">jobooth72</span> vs <span class="q">jo.booth72</span>.</p></div>
-          <div><div class="mini-label">Build it into your item</div><p>A document figure that contradicts common knowledge; a near-miss handle or placeholder; a hedged range where a committed figure is required; or a demo-account time zone copied into a local time.</p></div>
+          <div><div class="mini-label">What happens</div><p>A document figure contradicted by general knowledge; a near-miss handle or placeholder; a hedged range where a committed figure is needed; a demo-account time zone copied into a local time.</p></div>
+          <div><div class="mini-label">Build it into your item</div><p>Pick one small lever and make the correct answer depend on honouring it exactly.</p></div>
         </div>
+        <div class="cases" data-cases="T9"><div class="cases-label">Real cases</div></div>
       </article>
 
     </div>
@@ -344,7 +401,7 @@
   <section id="passes" class="sec">
     <div class="section-head">
       <h2>What does not stump it</h2>
-      <p class="lead">Conditional pass rates: Pass divided by (Pass plus content Fail) when the artifact existed. Do not lean on these as your stump; the model mostly gets them right.</p>
+      <p class="lead">Conditional pass rates (Pass divided by Pass plus content Fail, when the artifact existed). Do not lean on these as your stump.</p>
     </div>
     <table class="ptable">
       <thead><tr><th>Ask</th><th style="text-align:right">Conditional pass rate</th></tr></thead>
@@ -361,7 +418,9 @@
         <tr><td class="k">Register</td><td class="r">62%</td></tr>
       </tbody>
     </table>
-    <p class="panel-note">Single-deliverable analytical reports in chat pass easily (76 to 98%). If your whole item is one report in chat, it will not stump the model: add a Workspace deliverable and real traps.</p>
+    <div class="cases-label" style="margin-top:22px">Real cases where it passes</div>
+    <div id="nsCases"></div>
+    <p class="panel-note">Single-deliverable analytical reports in chat pass easily (76 to 98%). If your whole item is one report in chat, it will not stump the model.</p>
   </section>
 
   <!-- ============ QC TRAPS ============ -->
@@ -375,35 +434,17 @@
       <div class="trap"><h4>Inputs not uploaded</h4><p>A file the item depends on is never attached, so a reviewer cannot verify the answer.</p></div>
       <div class="trap"><h4>Unasked criteria</h4><p>Criteria lifted from Not Known while explicit asks in the turn have no criterion.</p></div>
       <div class="trap"><h4>Invalid run</h4><p>A single turn that copies the opener, a drip-fed or steered chat, or an unrecorded steering turn.</p></div>
-      <div class="trap"><h4>Uploads that do not match the run</h4><p>An output the run never produced, a previous run's PDF used as input, or a turn record edited after the run.</p></div>
+      <div class="trap"><h4>Evidence not from this run</h4><p>An output the run never produced, a previous run's PDF used as input, or a turn record edited after the run.</p></div>
       <div class="trap"><h4>Grading claims instead of state</h4><p>The Gmail card is a compose preview. Grade cards from the share page, never from the chat PDF placeholder.</p></div>
       <div class="trap"><h4>Time-zone display artefacts</h4><p>A demo account in IST, GMT+03 or US time is not an error by itself. Read the share page before failing it.</p></div>
       <div class="trap"><h4>Gaming the gate</h4><p>Cutting criteria, inverting weights or misgrading to get under 40%. Harden the item instead.</p></div>
     </div>
-  </section>
-
-  <!-- ============ LOCALES ============ -->
-  <section id="locales" class="sec">
-    <div class="section-head">
-      <h2>By locale</h2>
-      <p class="lead">Small-n and confounded by universe and contributor, so read these as tendencies, not rules.</p>
-    </div>
-    <table class="ptable">
-      <thead><tr><th>Locale</th><th>Valid tasks</th><th>Mean gate</th><th>Main failure mode</th></tr></thead>
-      <tbody>
-        <tr><td class="k">fr</td><td>11</td><td class="k">28.9% (lowest)</td><td>File edits and tool limit</td></tr>
-        <tr><td class="k">de</td><td>16</td><td class="k">37.0%</td><td>Status judgement and one-draft runs</td></tr>
-        <tr><td class="k">en</td><td>11</td><td class="k">38.5%</td><td>Content errors</td></tr>
-        <tr><td class="k">ko</td><td>9</td><td class="k">38.5%</td><td>One-action stop and printed tables</td></tr>
-        <tr><td class="k">ja</td><td>18</td><td class="k">42.5%</td><td>One-action stop</td></tr>
-      </tbody>
-    </table>
 
     <div class="callout good">
       <span class="callout-ic">&#9989;</span>
       <div><b>A stump only counts if a careful agent would have passed.</b> Same prompt, same inputs, same tools: the evidence was reachable, the request was clear, and nothing was hidden, broken or forced. If a careful agent would also have failed, it is not a valid stump. Harden the item; never game the gate.</div>
     </div>
-    <p class="caveat">Caveats: heuristic classification (regex plus hand tagging of about 140 content Fails), n = 69, 2 to 5 universes per locale, and many tasks per contributor. The rubrics and gates reflect our fixed grading under the content-evidence rule, not the contributors' original grades.</p>
+    <p class="caveat">Caveats: 53 hand-checked cases and 81 tagged tasks, 2 to 5 universes per locale. Tags are not exhaustive, so a task can list a technique it was not designed around. Images, email exports and calendar exports are thin (fewer than 5 tasks) and there are no audio tasks, so the selector flags low confidence. Rates are QC's corrected grading, not the contributors' originals.</p>
   </section>
 
 </main>
@@ -423,14 +464,124 @@
   <div class="foot-note">Build items that stump Gemini 3.8 Flash for the right reason: a careful agent, with the same inputs and tools, would have passed. Harden the item; never game the gate.</div>
 </footer>
 
+<script src="assets/playbook-data.js"></script>
 <script>
-  var root = document.documentElement;
-  var themeToggle = document.getElementById('themeToggle');
-  if (themeToggle) themeToggle.addEventListener('click', function(){
-    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    try { localStorage.setItem('qc-theme', next); } catch (e) {}
+(function(){
+  var root = document.documentElement, tt = document.getElementById('themeToggle');
+  if (tt) tt.addEventListener('click', function(){ var n = root.getAttribute('data-theme')==='dark'?'light':'dark'; root.setAttribute('data-theme', n); try{localStorage.setItem('qc-theme', n);}catch(e){} });
+
+  var PB = window.PLAYBOOK; if (!PB) return;
+  var esc = function(s){ return (s==null?'':String(s)).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+
+  // ---- Technique filter chips ----
+  var names = PB.mapping.names;
+  var order = ['T1','T2','T3','T4','T5','T6','T7','T8','T9'];
+  var tf = document.getElementById('typeFilter');
+  var chips = [['all','All']].concat(order.map(function(t){ return [t, t + ' ' + names[t]]; }));
+  tf.innerHTML = chips.map(function(c,i){ return '<button class="tf-chip'+(i===0?' active':'')+'" data-f="'+c[0]+'">'+esc(c[1])+'</button>'; }).join('');
+  tf.addEventListener('click', function(e){
+    var b = e.target.closest('.tf-chip'); if(!b) return;
+    tf.querySelectorAll('.tf-chip').forEach(function(x){ x.classList.remove('active'); });
+    b.classList.add('active');
+    var f = b.getAttribute('data-f');
+    document.querySelectorAll('#playList .play').forEach(function(p){ p.classList.toggle('hide', f!=='all' && p.getAttribute('data-t')!==f); });
   });
+
+  // ---- Real cases into each technique ----
+  var SHAPE_ORDER = ['inputs','connectors','asks'];
+  function caseHtml(e){
+    var meta = '<span class="case-id">'+esc(e.loc)+' &middot; '+esc(e.id)+'</span>';
+    if (e.w) meta += '<span class="tag rose">weight '+esc(e.w)+'</span>';
+    if (e.lever) meta += '<span class="tag">'+esc(e.lever.replace(/_/g,' '))+'</span>';
+    if (e.easy) meta += '<span class="tag gold">still easy overall</span>';
+    if (e.pass) meta += '<span class="tag pass">passed</span>';
+    var shape = '';
+    if (e.shape) { var all=[]; SHAPE_ORDER.forEach(function(k){ (e.shape[k]||[]).forEach(function(v){ all.push(v.replace(/_/g,' ')); }); });
+      shape = all.length ? '<div class="case-shape">'+all.map(function(s){return '<span class="s">'+esc(s)+'</span>';}).join('')+'</div>' : ''; }
+    var origAsk = (e.asked && e.asked !== e.asked_en) ? '<p class="orig">'+esc(e.asked)+'</p>' : '';
+    return '<details class="case"><summary>'+meta+'<span class="case-crit">'+esc(e.crit)+'</span><span class="case-chevron">&#8250;</span></summary>'+
+      '<div class="case-body">'+
+      '<div class="cl">Asked</div><p>'+esc(e.asked_en||e.asked)+'</p>'+origAsk+
+      '<div class="cl">What it did</div><p>'+esc(e.did_en)+'</p>'+
+      '<div class="cl">'+(e.pass?'Why it passes':'Why it failed')+'</div><p>'+esc(e.why)+'</p>'+
+      (e.gate?'<div class="cl">Task gate</div><p>'+esc(e.gate)+'</p>':'')+
+      shape+
+      '</div></details>';
+  }
+  var byTech = {};
+  PB.examples.forEach(function(e){ (byTech[e.t]=byTech[e.t]||[]).push(e); });
+  order.forEach(function(t){
+    var box = document.querySelector('[data-cases="'+t+'"]'); if(!box) return;
+    var list = byTech[t]||[];
+    box.querySelector('.cases-label').textContent = 'Real cases (' + list.length + ')';
+    box.insertAdjacentHTML('beforeend', list.map(caseHtml).join(''));
+  });
+  var ns = document.getElementById('nsCases');
+  if (ns) ns.insertAdjacentHTML('beforeend', (byTech['NS']||[]).map(caseHtml).join(''));
+
+  // ---- Start from your task selector ----
+  var LABELS = { doc:'Doc', sheet:'Sheet', pdf:'PDF', image:'Image', audio:'Audio', email_export:'Email export', calendar_export:'Calendar export',
+    gmail:'Gmail', drive:'Drive', calendar:'Calendar',
+    figure:'A figure to compute', verdict_per_item:'A verdict per item', file:'A file to produce', draft:'A draft', event:'A calendar event', summary:'A summary', edit_existing:'Edit an existing file' };
+  var feats = PB.mapping.features, marg = PB.mapping.marginals, tasks = PB.mapping.tasks;
+  var sel = { inputs:new Set(), connectors:new Set(), asks:new Set() };
+  function lowN(cat,f){ var m = marg[cat] && marg[cat][f]; return m ? (m.low_n || (m.n_tasks!=null && m.n_tasks<5)) : true; }
+  function renderGroup(cat, id){
+    var el = document.getElementById(id);
+    el.innerHTML = feats[cat].map(function(f){
+      var ln = lowN(cat,f) ? ' <span class="lown">&middot; thin</span>' : '';
+      return '<button class="feat-chip" data-cat="'+cat+'" data-f="'+f+'">'+esc(LABELS[f]||f)+ln+'</button>';
+    }).join('');
+  }
+  renderGroup('inputs','fgInputs'); renderGroup('connectors','fgConnectors'); renderGroup('asks','fgAsks');
+
+  function compute(){
+    var chosen = sel.inputs.size + sel.connectors.size + sel.asks.size;
+    var matches = tasks.filter(function(t){
+      return [].concat.apply([], [[...sel.inputs].map(function(f){return t.inputs.indexOf(f)>=0;}),
+        [...sel.connectors].map(function(f){return t.connectors.indexOf(f)>=0;}),
+        [...sel.asks].map(function(f){return t.asks.indexOf(f)>=0;})]).every(Boolean);
+    });
+    if (chosen===0) matches = tasks;
+    var ranking, mode;
+    if (matches.length>=5 || chosen===0){
+      ranking = order.map(function(t){ var c = matches.filter(function(m){return m.techniques.indexOf(t)>=0;}).length;
+        return { t:t, name:names[t], rate: matches.length? c/matches.length : 0 }; });
+      mode = chosen===0 ? 'all '+tasks.length+' tasks (base rates)' : matches.length+' matching task'+(matches.length===1?'':'s');
+    } else {
+      ranking = order.map(function(t){
+        var rates=[]; ['inputs','connectors','asks'].forEach(function(cat){ [...sel[cat]].forEach(function(f){ var m=marg[cat]&&marg[cat][f]; if(m&&m.techniques[t]) rates.push(m.techniques[t].rate); }); });
+        var avg = rates.length ? rates.reduce(function(a,b){return a+b;},0)/rates.length : PB.mapping.base_rate[t];
+        return { t:t, name:names[t], rate:avg }; });
+      mode = 'only '+matches.length+' task'+(matches.length===1?'':'s')+' match; showing feature averages';
+    }
+    ranking.sort(function(a,b){ return b.rate-a.rate; });
+    return { ranking:ranking, mode:mode };
+  }
+  function render(){
+    var r = compute(), max = Math.max(0.0001, r.ranking[0].rate);
+    document.getElementById('selMode').textContent = r.mode;
+    document.getElementById('selResult').innerHTML = r.ranking.map(function(x,i){
+      var pct = Math.round(x.rate*100);
+      return '<div class="rank-row'+(i>=3?' dim':'')+'"><div class="rank-name"><span class="k">'+x.t+'</span> '+esc(x.name)+'</div>'+
+        '<div class="rank-bar"><span style="width:'+Math.round(x.rate/max*100)+'%"></span></div>'+
+        '<div class="rank-pct">'+pct+'%</div></div>';
+    }).join('');
+  }
+  document.querySelectorAll('.feat-chip').forEach(function(c){
+    c.addEventListener('click', function(){
+      var cat=c.getAttribute('data-cat'), f=c.getAttribute('data-f');
+      if (sel[cat].has(f)) { sel[cat].delete(f); c.classList.remove('on'); } else { sel[cat].add(f); c.classList.add('on'); }
+      render();
+    });
+  });
+  document.getElementById('selReset').addEventListener('click', function(){
+    sel.inputs.clear(); sel.connectors.clear(); sel.asks.clear();
+    document.querySelectorAll('.feat-chip.on').forEach(function(c){ c.classList.remove('on'); });
+    render();
+  });
+  render();
+})();
 </script>
 </body>
 </html>
