@@ -144,6 +144,25 @@
   .case-body p.orig { margin-top: 4px; color: var(--muted); font-size: 12px; }
   .case-shape { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
   .case-shape .s { font-size: 10px; font-weight: 700; color: var(--muted); background: var(--inside-bg); border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; }
+  .case-link { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: var(--brand); }
+  .case-link:hover { text-decoration: underline; }
+
+  /* ---- Strong items ---- */
+  .strong-list { display: flex; flex-direction: column; gap: 16px; }
+  .strong-card { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--pass-line); border-radius: 16px; padding: 18px 20px; box-shadow: var(--shadow); }
+  .strong-top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .strong-gate { font-size: 12.5px; font-weight: 800; color: var(--pass-ink); background: var(--pass-bg); border: 1px solid var(--pass-line); border-radius: 999px; padding: 3px 11px; }
+  .strong-turn { background: var(--inside-bg); border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; font-size: 13px; color: var(--notes-ink); }
+  .strong-turn .orig { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); color: var(--muted); font-size: 12.2px; }
+  .strong-grid { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .strong-grid p { margin: 0; font-size: 12.8px; color: var(--notes-ink); }
+  .scrits { margin-top: 6px; }
+  .scrit { border-top: 1px solid var(--line); padding: 10px 0; }
+  .scrit:first-child { border-top: 0; }
+  .scrit .sc-head { font-size: 12.8px; font-weight: 700; color: var(--notes-strong); display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .scrit .sc-did { margin: 5px 0 0; font-size: 12.2px; color: var(--muted); }
+  .scrit .sc-why { margin: 4px 0 0; font-size: 12.4px; color: var(--notes-ink); }
+  @media (max-width: 900px) { .strong-grid { grid-template-columns: 1fr; } }
 
   .ptable { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
   .ptable th { text-align: left; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--inside-bg); padding: 11px 16px; border-bottom: 1px solid var(--line); }
@@ -226,6 +245,7 @@
         <a class="pill" href="#data">The data</a>
         <a class="pill" href="#your-task">Start from your task</a>
         <a class="pill" href="#techniques">Techniques</a>
+        <a class="pill" href="#strong">Strong items</a>
         <a class="pill" href="#passes">What does not stump it</a>
         <a class="pill" href="#traps">QC traps</a>
       </nav>
@@ -397,6 +417,15 @@
     </div>
   </section>
 
+  <!-- ============ STRONG ITEMS ============ -->
+  <section id="strong" class="sec">
+    <div class="section-head">
+      <h2>What a strong item looks like</h2>
+      <p class="lead">Five real items that scored at or under 40%, passed QC without a send-back, and were stumped by a technique rather than a broken rubric. The positive target to aim for.</p>
+    </div>
+    <div class="strong-list" id="strongList"></div>
+  </section>
+
   <!-- ============ WHAT DOES NOT STUMP IT ============ -->
   <section id="passes" class="sec">
     <div class="section-head">
@@ -505,6 +534,7 @@
       '<div class="cl">What it did</div><p>'+esc(e.did_en)+'</p>'+
       '<div class="cl">'+(e.pass?'Why it passes':'Why it failed')+'</div><p>'+esc(e.why)+'</p>'+
       (e.gate?'<div class="cl">Task gate</div><p>'+esc(e.gate)+'</p>':'')+
+      (e.link?'<div class="cl">Evidence</div><p><a class="case-link" href="'+esc(e.link)+'" target="_blank" rel="noopener">Open the share page &#8599;</a></p>':'')+
       shape+
       '</div></details>';
   }
@@ -518,6 +548,28 @@
   });
   var ns = document.getElementById('nsCases');
   if (ns) ns.insertAdjacentHTML('beforeend', (byTech['NS']||[]).map(caseHtml).join(''));
+
+  // ---- Strong items ----
+  var sl = document.getElementById('strongList');
+  if (sl && PB.strong) {
+    sl.innerHTML = PB.strong.map(function(s){
+      var techs = (s.techniques||[]).map(function(t){ return '<span class="tag">'+esc(t)+(names[t]?' '+esc(names[t]):'')+'</span>'; }).join('');
+      var origTurn = (s.turn && s.turn !== s.turn_en) ? '<div class="orig">'+esc(s.turn)+'</div>' : '';
+      var crits = (s.crits||[]).map(function(c){
+        return '<div class="scrit"><div class="sc-head"><span class="tag rose">weight '+esc(c.w)+'</span> '+esc(c.criterion)+'</div>'+
+          (c.did?'<p class="sc-did">Model: '+esc(c.did)+'</p>':'')+
+          (c.why?'<p class="sc-why">'+esc(c.why)+'</p>':'')+'</div>';
+      }).join('');
+      var link = s.link ? '<a class="case-link" href="'+esc(s.link)+'" target="_blank" rel="noopener">Share page &#8599;</a>' : '';
+      return '<article class="strong-card">'+
+        '<div class="strong-top"><span class="strong-gate">gate '+esc(s.gate)+'%</span><span class="case-id">'+esc(s.loc)+' &middot; '+esc(s.id)+'</span>'+techs+link+'</div>'+
+        '<div class="strong-turn">'+esc(s.turn_en||s.turn)+origTurn+'</div>'+
+        '<div class="strong-grid"><div><div class="mini-label">What makes it strong</div><p>'+esc(s.strong)+'</p></div>'+
+        '<div><div class="mini-label">Why it is fair</div><p>'+esc(s.why_fair)+'</p></div></div>'+
+        '<div class="cases-label" style="margin-top:14px">What stumped it</div><div class="scrits">'+crits+'</div>'+
+        '</article>';
+    }).join('');
+  }
 
   // ---- Start from your task selector ----
   var LABELS = { doc:'Doc', sheet:'Sheet', pdf:'PDF', image:'Image', audio:'Audio', email_export:'Email export', calendar_export:'Calendar export',
